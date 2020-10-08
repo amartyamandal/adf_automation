@@ -1,0 +1,64 @@
+
+on:
+  push:
+    branches: 
+      - adf_dev
+    paths:
+      - iac/tf/**
+  
+#env:
+########## If storing tfstate to azure storage ##########
+#  ARM_CLIENT_ID: ${{ secrets.SP_CLIENT_ID }}
+#  ARM_CLIENT_SECRET: ${{ secrets.SP_CLIENT_SECRET }}
+#  ARM_SUBSCRIPTION_ID: ${{ secrets.SP_SUBSCRIPTION_ID }}
+#  ARM_TENANT_ID: ${{ secrets.SP_TENANT_ID }}
+jobs:
+  build-and-deploy-to-dev:
+    name: "Terraforms"
+    runs-on: ubuntu-latest
+    steps:
+    # Authentication
+    # Set up the following secrets in your repository: AZURE_CREDENTIALS
+    #- name: Azure Login
+    #  uses: azure/login@v1
+    #  with:
+    #    creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v1
+    
+    # - name: Run Checkov Action to chec mis configuration
+    #   id: checkov
+    #   uses: bridgecrewio/checkov-action@master
+    #   with:
+    #     directory: iac/tf/
+    #     framework: terraform
+
+    - name: Setup Terraform
+     uses: hashicorp/setup-terraform@v1
+     with:
+       terraform_version: 0.13.3
+       cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+    #- name: Terraform Formats 
+    #  id: fmt
+    #  run: terraform fmt -check iac/tf
+
+    - name: Terraform Init
+     id: init
+     run: terraform init iac/tf
+
+    - name: Terraform Plan iac/tf
+     id: plan
+     if: github.event_name == 'push'
+     run: terraform plan -no-color iac/tf
+     continue-on-error: true
+
+    
+    - name: Terraform Plan Status
+     if: steps.plan.outcome == 'failure'
+     run: exit 1
+
+    - name: Terraform Apply
+     run: terraform apply -auto-approve iac/tf
