@@ -1,0 +1,49 @@
+name: Deploy Prod Infrastructure
+on:
+  push:
+    branches: 
+      - adf_prod
+    paths:
+      - iac/tf/**
+
+jobs:
+  build-and-deploy-to-prod:
+    runs-on: ubuntu-latest
+    steps:    
+    # Checkout
+    - name: Checkout
+      uses: actions/checkout@v1
+    
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.13.4
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+        
+    - name: Terraform Init
+      id: init
+      run: terraform init iac/tf
+    
+    
+    - name: Terraform Plan iac/tf
+      id: plan
+      if: github.event_name == 'push'
+      run: terraform plan -no-color iac/tf
+      continue-on-error: true
+    
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
+    
+    - name: Terraform Apply
+      run: terraform apply -auto-approve iac/tf
+    
+    #- name: Azure CLI script
+    #  uses: azure/CLI@v1
+    #  with:
+    #    azcliversion: 2.0.72
+    #    inlineScript: |
+    #      az account show
+    #      ACCOUNT_KEY=$(az storage account keys list --resource-group ${{ env.AZURE_RESOURCE_GROUP }} --account-name ${{ env.STORAGE_ACCOUNT_NAME }} --query [0].value -o tsv)
+    #      STORAGE_PROD_CONN="DefaultEndpointsProtocol=https;AccountName=${{ env.STORAGE_ACCOUNT_NAME }};AccountKey=$ACCOUNT_KEY;EndpointSuffix=core.windows.net"
+    #      az keyvault secret set --vault-name $VAULT_NAME --name $STORAGE_ACCOUNT_KEY --value $STORAGE_PROD_CONN
