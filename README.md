@@ -9,7 +9,8 @@
 
   - Most of the demo's in the internet are using Azure Dev Ops, its a nice tool, but personally I would like to use GitHub workflow which is really easy and terraform for IAC as well as terraform cloud to maintain tfstate and collaborate through workspace.
 
-Following video has all the explanation.
-Follow the video to understand how the branch has been structured, all the secrets needs to be created based on your use case.
-codes has placeholders like "<>" which means replace the same with your own values.
-https://www.youtube.com/watch?v=ejqngEZ4Yno&feature=emb_logo
+- You will find 2 branches in this repo, other than main "adf_dev" & "adf_prod",switch over to each of this to see the tf scripts and GitHub actions/workflows associated.
+- Follow the video to understand how the branch has been structured, all the secrets needs to be created based on your use case.Codes has placeholders like "<>" which means replace the same with your own values.
+
+- Youtube Link 
+  https://www.youtube.com/watch?v=ejqngEZ4Yno&feature=emb_logo
