@@ -62,7 +62,7 @@ jobs:
         # You can change these environment variables for your configuration:   AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP
         subscriptionId: ${{ env.AZURE_SUBSCRIPTION_ID }}
         resourceGroupName: ${{ env.AZURE_RESOURCE_GROUP }}
-        template: ${{ github.workspace }}/${{ env.AZURE_DEV_DF_NAME }}/ARMTemplateForFactory.json             
-        parameters: ${{ github.workspace }}/${{ env.AZURE_DEV_DF_NAME }}/ARMTemplateParametersForFactory.json 
+        template: ${{ github.workspace }}/DFDEVOPS00/ARMTemplateForFactory.json             
+        parameters: ${{ github.workspace }}/DFDEVOPS00/ARMTemplateParametersForFactory.json 
                     factoryName=${{ env.AZURE_PRD_DF_NAME }} 
                     adfbloblink01_connectionString=${{ env.PROD_STORAGE_CONN }} 
